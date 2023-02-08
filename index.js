@@ -8,6 +8,13 @@ The json-parser functions so that it takes the JSON data of a request,
 transforms it into a JavaScript object and then attaches it to the body
  property of the request object before the route handler is called.*/
 app.use(express.json());
+//? Serving our static content from the build folder where our react app is
+/*
+Now HTTP GET requests to the address www.serversaddress.com/index.html
+or www.serversaddress.com will show the React frontend. GET requests
+to the address www.serversaddress.com/api/notes will be handled by the backend's code.
+*/
+app.use(express.static("build"));
 app.use(cors());
 const generateNoteId = () => {
   return uuidv4();
@@ -32,11 +39,9 @@ app.get("/api/notes/:id", (req, res) => {
 
   const note = notes.find((singleNote) => singleNote.id === noteId);
 
-  console.log(note);
   if (note) {
     res.json(note);
   } else {
-    console.log("here");
     res.status(204);
     res.json({ status: "fail", message: `No note with ${noteId}` });
   }
@@ -45,8 +50,6 @@ app.get("/api/notes/:id", (req, res) => {
 //* Delete single note
 app.delete("/api/notes/:id", (req, res) => {
   const noteFound = notes.find((note) => note.id === req.params.id);
-
-  console.log(notes);
 
   if (noteFound) {
     notes = notes.filter((note) => note.id !== noteFound.id);
